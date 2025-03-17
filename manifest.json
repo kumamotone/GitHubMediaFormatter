@@ -1,8 +1,8 @@
 {
-  "name": "GitHub Image Formatter",
+  "name": "GitHub Media Formatter",
   "version": "1.0",
   "manifest_version": 3,
-  "description": "Format image markdown in GitHub PR comments",
+  "description": "Format image and video markdown in GitHub PR comments",
   "permissions": [],
   "host_permissions": [
     "https://github.com/*"
