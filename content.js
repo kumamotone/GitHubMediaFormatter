@@ -47,7 +47,7 @@ function addFormatButton(textArea) {
     
     // ボタンを作成
     const formatButton = document.createElement('button');
-    formatButton.innerText = '画像Markdownを整形';
+    formatButton.innerText = '選択範囲の画像を整形';
     formatButton.className = 'btn btn-sm';
     formatButton.style.marginRight = '5px';
     formatButton.type = 'button'; // 明示的にbutton型を指定して送信を防止
@@ -58,9 +58,26 @@ function addFormatButton(textArea) {
       event.preventDefault();
       event.stopPropagation();
       
-      const content = textArea.value;
-      const formattedContent = formatImageMarkdown(content);
-      textArea.value = formattedContent;
+      // 選択範囲を取得
+      const start = textArea.selectionStart;
+      const end = textArea.selectionEnd;
+      
+      // 選択範囲がある場合のみ処理
+      if (start !== end) {
+        const fullText = textArea.value;
+        const selectedText = fullText.substring(start, end);
+        const formattedSelection = formatImageMarkdown(selectedText);
+        
+        // 選択範囲を整形したテキストで置き換え
+        textArea.value = fullText.substring(0, start) + formattedSelection + fullText.substring(end);
+        
+        // 選択状態を維持（整形後のテキスト長に合わせて）
+        textArea.selectionStart = start;
+        textArea.selectionEnd = start + formattedSelection.length;
+      } else {
+        // 選択範囲がない場合はアラート表示
+        alert('テキストを選択してから「選択範囲の画像を整形」ボタンを押してください。');
+      }
       
       // フォーカスをテキストエリアに戻す
       textArea.focus();
@@ -76,7 +93,6 @@ function addFormatButton(textArea) {
   } else {
     // 既存のツールバーにボタンを追加
     const formatButton = document.createElement('button');
-    formatButton.innerText = '画像整形';
     formatButton.className = 'toolbar-item btn-octicon';
     formatButton.type = 'button';
     formatButton.style.marginLeft = '5px';
@@ -96,8 +112,8 @@ function addFormatButton(textArea) {
     formatButton.appendChild(svgIcon);
     
     // ヒントテキストを追加
-    formatButton.setAttribute('title', '画像Markdownを整形');
-    formatButton.setAttribute('aria-label', '画像Markdownを整形');
+    formatButton.setAttribute('title', '選択範囲の画像を整形');
+    formatButton.setAttribute('aria-label', '選択範囲の画像を整形');
     
     // ボタンクリック時の処理
     formatButton.addEventListener('click', (event) => {
@@ -105,13 +121,30 @@ function addFormatButton(textArea) {
       event.preventDefault();
       event.stopPropagation();
       
-      const content = textArea.value;
-      const formattedContent = formatImageMarkdown(content);
-      textArea.value = formattedContent;
+      // 選択範囲を取得
+      const start = textArea.selectionStart;
+      const end = textArea.selectionEnd;
       
-      // テキストエリアのHTMLイベントを発火して、GitHubのプレビューを更新
-      const inputEvent = new Event('input', { bubbles: true });
-      textArea.dispatchEvent(inputEvent);
+      // 選択範囲がある場合のみ処理
+      if (start !== end) {
+        const fullText = textArea.value;
+        const selectedText = fullText.substring(start, end);
+        const formattedSelection = formatImageMarkdown(selectedText);
+        
+        // 選択範囲を整形したテキストで置き換え
+        textArea.value = fullText.substring(0, start) + formattedSelection + fullText.substring(end);
+        
+        // 選択状態を維持（整形後のテキスト長に合わせて）
+        textArea.selectionStart = start;
+        textArea.selectionEnd = start + formattedSelection.length;
+        
+        // テキストエリアのHTMLイベントを発火して、GitHubのプレビューを更新
+        const inputEvent = new Event('input', { bubbles: true });
+        textArea.dispatchEvent(inputEvent);
+      } else {
+        // 選択範囲がない場合はアラート表示
+        alert('テキストを選択してから「選択範囲の画像を整形」ボタンを押してください。');
+      }
       
       // フォーカスをテキストエリアに戻す
       textArea.focus();
